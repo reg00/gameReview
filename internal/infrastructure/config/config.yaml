@@ -1,0 +1,11 @@
+http:
+  port: 5678
+  timeout: 30
+storage:
+  provider: gorm
+  options:
+    driver: "postgresql"
+    dsn: "*"
+igdb:
+  clientId: "*"
+  cliendSecret: "*"
