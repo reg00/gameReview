@@ -3,11 +3,15 @@ module github.com/Reg00/gameReview
 go 1.19
 
 require (
+	github.com/Henry-Sarabia/igdb/v2 v2.0.0-alpha.4
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.6.1
 )
 
 require (
+	github.com/Henry-Sarabia/apicalypse v1.0.3 // indirect
+	github.com/Henry-Sarabia/blank v3.0.0+incompatible // indirect
+	github.com/Henry-Sarabia/sliceconv v1.0.2 // indirect
 	github.com/bytedance/sonic v1.8.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
@@ -44,6 +48,7 @@ require (
 
 require (
 	github.com/gin-gonic/gin v1.9.0
+	github.com/google/wire v0.5.0
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.15.0

@@ -9,6 +9,7 @@ package di
 import (
 	"github.com/Reg00/gameReview/internal/infrastructure/appctx"
 	"github.com/Reg00/gameReview/internal/infrastructure/config"
+	"github.com/Reg00/gameReview/internal/infrastructure/igdb"
 	"github.com/Reg00/gameReview/internal/infrastructure/web"
 	"github.com/Reg00/gameReview/internal/infrastructure/web/routes"
 )
@@ -18,7 +19,11 @@ import (
 func InitWebServer() (*web.Server, error) {
 	coreContext := appctx.Register()
 	configuration := config.Register()
-	engine := routes.Register()
+	igdbClient := igdb.Register(configuration)
+	engine, err := routes.Register(igdbClient)
+	if err != nil {
+		return nil, err
+	}
 	server := web.Register(coreContext, configuration, engine)
 	return server, nil
 }
