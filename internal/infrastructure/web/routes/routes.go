@@ -26,6 +26,7 @@ func Register(igdb port.GameSearcher) (*gin.Engine, error) {
 	})
 
 	r.GET("/games", h.GetGamesByNameHandlerFunc)
+	r.GET("/games/:id", h.GetGameById)
 	//r.POST("/auth", api.GetAuth)
 	//r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	//r.POST("/upload", api.UploadImage)

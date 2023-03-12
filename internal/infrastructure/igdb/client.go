@@ -2,7 +2,6 @@ package igdb
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/Henry-Sarabia/igdb/v2"
 	"github.com/Reg00/gameReview/internal/domain/dto"
@@ -22,6 +21,20 @@ func Register(
 	return igdbClient
 }
 
+func (client *IgdbClient) GetGameById(id int) (dto.Game, error) {
+	game, err := client.Client.Games.Get(id, igdb.SetFields("name", "cover", "genres"))
+	if err != nil {
+		return dto.Game{}, err
+	}
+
+	dtoGame, err := client.convertToDto(game)
+	if err != nil {
+		return dto.Game{}, err
+	}
+
+	return dtoGame, nil
+}
+
 func (client *IgdbClient) GetGamesByName(offset int, limit int, name string) ([]dto.Game, error) {
 	var gms []dto.Game
 
@@ -30,7 +43,6 @@ func (client *IgdbClient) GetGamesByName(offset int, limit int, name string) ([]
 		igdb.SetFields("name", "cover", "genres"),
 		igdb.SetOffset(offset),
 		igdb.SetLimit(limit),
-		//igdb.SetOrder("name", igdb.OrderAscending),
 	)
 
 	if err != nil {
@@ -40,38 +52,50 @@ func (client *IgdbClient) GetGamesByName(offset int, limit int, name string) ([]
 	}
 
 	for _, game := range games {
-		var img string
-		var genrs []string
 
-		if game.Cover != 0 {
-			cover, err := client.Client.Covers.Get(game.Cover, igdb.SetFields("image_id"))
-			if err != nil {
-				log.Println(err)
-			}
-
-			img, err = cover.SizedURL(igdb.SizeCoverSmall, 1)
-			if err != nil {
-				log.Println(err)
-			}
+		dtoGame, err := client.convertToDto(game)
+		if err != nil {
+			return nil, err
 		}
 
-		if len(game.Genres) > 0 {
-			genres, err := client.Client.Genres.List(game.Genres, igdb.SetFields("name"))
-			if err != nil {
-				log.Println(err)
-			}
-
-			for _, genre := range genres {
-				genrs = append(genrs, genre.Name)
-			}
-		}
-
-		gms = append(gms, dto.Game{
-			Name:     game.Name,
-			ImageURI: img,
-			Genres:   genrs,
-		})
+		gms = append(gms, dtoGame)
 	}
 
 	return gms, nil
+}
+
+func (client *IgdbClient) convertToDto(game *igdb.Game) (dto.Game, error) {
+	var img string
+	var genrs []string
+
+	if game.Cover != 0 {
+		cover, err := client.Client.Covers.Get(game.Cover, igdb.SetFields("image_id"))
+		if err != nil {
+			return dto.Game{}, err
+		}
+
+		img, err = cover.SizedURL(igdb.SizeCoverSmall, 1)
+		if err != nil {
+			return dto.Game{}, err
+		}
+	}
+
+	if len(game.Genres) > 0 {
+		genres, err := client.Client.Genres.List(game.Genres, igdb.SetFields("name"))
+		if err != nil {
+			return dto.Game{}, err
+		}
+
+		for _, genre := range genres {
+			genrs = append(genrs, genre.Name)
+		}
+	}
+
+	dtoGame := dto.Game{
+		Name:     game.Name,
+		ImageURI: img,
+		Genres:   genrs,
+	}
+
+	return dtoGame, nil
 }

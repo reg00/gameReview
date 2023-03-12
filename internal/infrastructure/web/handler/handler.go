@@ -21,6 +21,23 @@ func New(igdb port.GameSearcher) (*Handler, error) {
 	return h, nil
 }
 
+func (h *Handler) GetGameById(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	game, err := h.grs.GetGameById(id)
+	if err != nil {
+		fmt.Println(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+	}
+
+	c.IndentedJSON(http.StatusOK, game)
+}
+
 func (h *Handler) GetGamesByNameHandlerFunc(c *gin.Context) {
 	name := c.Query("name")
 	offsetStr := c.DefaultQuery("offset", "0")
@@ -41,7 +58,6 @@ func (h *Handler) GetGamesByNameHandlerFunc(c *gin.Context) {
 	games, err := h.grs.GetGamesByName(offset, limit, name)
 	if err != nil {
 		fmt.Println(err.Error())
-
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
 	}
 
