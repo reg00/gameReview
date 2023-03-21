@@ -2,10 +2,13 @@ package igdb
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/Henry-Sarabia/igdb/v2"
 	"github.com/Reg00/gameReview/internal/domain/dto"
+	"github.com/Reg00/gameReview/internal/domain/dto/httperr"
 	"github.com/Reg00/gameReview/internal/infrastructure/config"
+	"github.com/pkg/errors"
 )
 
 type IgdbClient struct {
@@ -24,12 +27,12 @@ func Register(
 func (client *IgdbClient) GetGameById(id int) (dto.Game, error) {
 	game, err := client.Client.Games.Get(id, igdb.SetFields("name", "cover", "genres"))
 	if err != nil {
-		return dto.Game{}, err
+		return dto.Game{}, handleError(err)
 	}
 
 	dtoGame, err := client.convertToDto(game)
 	if err != nil {
-		return dto.Game{}, err
+		return dto.Game{}, handleError(err)
 	}
 
 	return dtoGame, nil
@@ -38,24 +41,34 @@ func (client *IgdbClient) GetGameById(id int) (dto.Game, error) {
 func (client *IgdbClient) GetGamesByName(offset int, limit int, name string) ([]dto.Game, error) {
 	var gms []dto.Game
 
-	games, err := client.Client.Games.Search(
-		name,
+	opts := igdb.ComposeOptions(
 		igdb.SetFields("name", "cover", "genres"),
 		igdb.SetOffset(offset),
-		igdb.SetLimit(limit),
-	)
+		igdb.SetLimit(limit))
+
+	var games []*igdb.Game
+	var err error
+
+	if name != "" {
+		games, err = client.Client.Games.Search(
+			name, opts,
+		)
+	} else {
+		games, err = client.Client.Games.Index(
+			opts)
+	}
+
+	client.Client.Games.Index()
 
 	if err != nil {
-		fmt.Println("Error while searching games: " + err.Error())
-
-		return nil, err
+		return nil, handleError(err)
 	}
 
 	for _, game := range games {
 
 		dtoGame, err := client.convertToDto(game)
 		if err != nil {
-			return nil, err
+			return nil, handleError(err)
 		}
 
 		gms = append(gms, dtoGame)
@@ -71,19 +84,19 @@ func (client *IgdbClient) convertToDto(game *igdb.Game) (dto.Game, error) {
 	if game.Cover != 0 {
 		cover, err := client.Client.Covers.Get(game.Cover, igdb.SetFields("image_id"))
 		if err != nil {
-			return dto.Game{}, err
+			return dto.Game{}, handleError(err)
 		}
 
 		img, err = cover.SizedURL(igdb.SizeCoverSmall, 1)
 		if err != nil {
-			return dto.Game{}, err
+			return dto.Game{}, handleError(err)
 		}
 	}
 
 	if len(game.Genres) > 0 {
 		genres, err := client.Client.Genres.List(game.Genres, igdb.SetFields("name"))
 		if err != nil {
-			return dto.Game{}, err
+			return dto.Game{}, handleError(err)
 		}
 
 		for _, genre := range genres {
@@ -98,4 +111,12 @@ func (client *IgdbClient) convertToDto(game *igdb.Game) (dto.Game, error) {
 	}
 
 	return dtoGame, nil
+}
+
+func handleError(err error) error {
+	if strings.Contains(err.Error(), "cannot get Game with ID") {
+		err = errors.Wrap(httperr.ErrNotFound, fmt.Sprintf("IGDB: %s", err.Error()))
+	}
+
+	return err
 }

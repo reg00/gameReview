@@ -1,0 +1,63 @@
+definitions:
+  dto.Game:
+    properties:
+      genres:
+        items:
+          type: string
+        type: array
+      imageURI:
+        type: string
+      name:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /games:
+    get:
+      consumes:
+      - application/json
+      description: return a list of game, searched by name
+      parameters:
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: name
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.Game'
+            type: array
+      summary: get list of games by name
+  /games/{id}:
+    get:
+      consumes:
+      - application/json
+      description: getting a game by game id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Game'
+      summary: get game by id
+swagger: "2.0"
