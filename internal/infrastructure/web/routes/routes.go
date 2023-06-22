@@ -15,8 +15,8 @@ import (
 // @title Swagger Example API
 // @version 1.0
 // @description This is a sample game review server.
-func Register(igdb port.GameSearcher) (*gin.Engine, error) {
-	h, err := handler.New(igdb)
+func Register(igdb port.GameSearcher, s port.Storager) (*gin.Engine, error) {
+	h, err := handler.New(igdb, s)
 	if err != nil {
 		return nil, err
 	}
@@ -34,6 +34,10 @@ func Register(igdb port.GameSearcher) (*gin.Engine, error) {
 		{
 			g.GET("/", h.GetGamesByNameHandlerFunc)
 			g.GET("/:id", h.GetGameById)
+		}
+		r := v1.Group("reviews")
+		{
+			r.POST("/", h.AddReview)
 		}
 	}
 	r.GET("/", func(c *gin.Context) {

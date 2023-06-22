@@ -10,6 +10,7 @@ import (
 	"github.com/Reg00/gameReview/internal/infrastructure/appctx"
 	"github.com/Reg00/gameReview/internal/infrastructure/config"
 	"github.com/Reg00/gameReview/internal/infrastructure/igdb"
+	"github.com/Reg00/gameReview/internal/infrastructure/storage"
 	"github.com/Reg00/gameReview/internal/infrastructure/web"
 	"github.com/Reg00/gameReview/internal/infrastructure/web/routes"
 )
@@ -20,7 +21,11 @@ func InitWebServer() (*web.Server, error) {
 	coreContext := appctx.Register()
 	configuration := config.Register()
 	igdbClient := igdb.Register(configuration)
-	engine, err := routes.Register(igdbClient)
+	gormStorage, err := gorm.Register(configuration)
+	if err != nil {
+		return nil, err
+	}
+	engine, err := routes.Register(igdbClient, gormStorage)
 	if err != nil {
 		return nil, err
 	}

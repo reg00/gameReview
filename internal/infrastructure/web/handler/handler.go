@@ -5,19 +5,24 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Reg00/gameReview/internal/domain/dto/storage"
 	"github.com/Reg00/gameReview/internal/domain/port"
 	"github.com/Reg00/gameReview/internal/domain/service"
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
-	grs *service.GameReviewService
+	grs     *service.GameReviewService
+	storage port.Storager
 }
 
-func New(igdb port.GameSearcher) (*Handler, error) {
+func New(
+	igdb port.GameSearcher,
+	s port.Storager) (*Handler, error) {
 	grs := service.NewGameReviewService(&igdb)
 	h := &Handler{}
 	h.grs = grs
+	h.storage = s
 	return h, nil
 }
 
@@ -81,4 +86,30 @@ func (h *Handler) GetGamesByNameHandlerFunc(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, games)
+}
+
+// @Summary add game review
+// @Schemes
+// @Description  add game review
+// @Accept json
+// @Produce json
+// @Param review body storage.Review true "review info"
+// @Success 200 {object} []dto.Game
+// @Router /games [get]
+func (h *Handler) AddReview(c *gin.Context) {
+	var review storage.Review
+
+	if err := c.BindJSON(&review); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	r, err := h.storage.AddReview(&review)
+	if err != nil {
+		fmt.Println(err.Error())
+		c.Error(err)
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, r)
 }
