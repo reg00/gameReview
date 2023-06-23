@@ -10,6 +10,21 @@ definitions:
       name:
         type: string
     type: object
+  storage.Review:
+    properties:
+      description:
+        type: string
+      gameid:
+        type: integer
+      id:
+        type: integer
+      playminutes:
+        type: integer
+      playtime:
+        type: integer
+      rate:
+        type: integer
+    type: object
 info:
   contact: {}
 paths:
@@ -60,4 +75,26 @@ paths:
           schema:
             $ref: '#/definitions/dto.Game'
       summary: get game by id
+  /reviews:
+    post:
+      consumes:
+      - application/json
+      description: add game review
+      parameters:
+      - description: review info
+        in: body
+        name: review
+        required: true
+        schema:
+          $ref: '#/definitions/storage.Review'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.Game'
+            type: array
+      summary: add game review
 swagger: "2.0"

@@ -87,6 +87,40 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/reviews": {
+            "post": {
+                "description": "add game review",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "add game review",
+                "parameters": [
+                    {
+                        "description": "review info",
+                        "name": "review",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/storage.Review"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.Game"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -104,6 +138,29 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "storage.Review": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "gameid": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "playminutes": {
+                    "type": "integer"
+                },
+                "playtime": {
+                    "type": "integer"
+                },
+                "rate": {
+                    "type": "integer"
                 }
             }
         }

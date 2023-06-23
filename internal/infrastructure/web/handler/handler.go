@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -95,12 +96,17 @@ func (h *Handler) GetGamesByNameHandlerFunc(c *gin.Context) {
 // @Produce json
 // @Param review body storage.Review true "review info"
 // @Success 200 {object} []dto.Game
-// @Router /games [get]
+// @Router /reviews [post]
 func (h *Handler) AddReview(c *gin.Context) {
 	var review storage.Review
 
 	if err := c.BindJSON(&review); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	if review.Rate < 0 || review.Rate > 10 {
+		c.AbortWithError(http.StatusBadRequest, errors.New("Rate must be betweeen 0 and 10"))
 		return
 	}
 
