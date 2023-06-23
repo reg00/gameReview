@@ -1,12 +1,13 @@
 package gorm
 
 import (
-	"errors"
 	"fmt"
 	"log"
 
-	"github.com/Reg00/gameReview/internal/domain/dto/storage"
+	dto "github.com/Reg00/gameReview/internal/domain/dto"
+	"github.com/Reg00/gameReview/internal/domain/dto/httperr"
 	"github.com/Reg00/gameReview/internal/infrastructure/config"
+	"github.com/pkg/errors"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -31,16 +32,27 @@ func Register(cfg *config.Configuration) (*GormStorage, error) {
 	default:
 		return nil, errors.New("gorm: invalid storage driver")
 	}
-	db.AutoMigrate(&storage.Review{})
+	db.AutoMigrate(&dto.Review{})
 	return &GormStorage{
 		gormDB: db,
 	}, nil
 }
 
-func (storage *GormStorage) AddReview(review *storage.Review) (*storage.Review, error) {
+func (storage *GormStorage) AddReview(review *dto.Review) (*dto.Review, error) {
 	result := storage.gormDB.Create(review)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return review, nil
+}
+
+func (storage *GormStorage) GetReviewById(id int) (*dto.Review, error) {
+	var review dto.Review
+	storage.gormDB.First(&review, "id = ?", id)
+
+	if review == (dto.Review{}) {
+		return &dto.Review{}, errors.Wrap(httperr.ErrNotFound, fmt.Sprintf("GORM: %s", errors.New(fmt.Sprintf("Cannot find review with %d", id))))
+	}
+
+	return &review, nil
 }

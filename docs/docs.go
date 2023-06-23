@@ -52,7 +52,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/dto.Game"
+                                "$ref": "#/definitions/models.Game"
                             }
                         }
                     }
@@ -82,7 +82,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.Game"
+                            "$ref": "#/definitions/models.Game"
                         }
                     }
                 }
@@ -105,7 +105,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/storage.Review"
+                            "$ref": "#/definitions/models.AddReview"
                         }
                     }
                 ],
@@ -113,10 +113,36 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/dto.Game"
-                            }
+                            "$ref": "#/definitions/dto.Review"
+                        }
+                    }
+                }
+            }
+        },
+        "/reviews/{id}": {
+            "get": {
+                "description": "get game review by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "get game review by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Review"
                         }
                     }
                 }
@@ -124,24 +150,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dto.Game": {
-            "type": "object",
-            "properties": {
-                "genres": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "imageURI": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "storage.Review": {
+        "dto.Review": {
             "type": "object",
             "properties": {
                 "description": {
@@ -161,6 +170,43 @@ const docTemplate = `{
                 },
                 "rate": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.AddReview": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "gameID": {
+                    "type": "integer"
+                },
+                "playMinutes": {
+                    "type": "integer"
+                },
+                "playTime": {
+                    "type": "integer"
+                },
+                "rate": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Game": {
+            "type": "object",
+            "properties": {
+                "genres": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "imageURI": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         }

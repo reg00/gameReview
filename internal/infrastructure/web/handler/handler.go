@@ -6,7 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Reg00/gameReview/internal/domain/dto/storage"
+	"github.com/Reg00/gameReview/internal/domain/dto"
+	"github.com/Reg00/gameReview/internal/domain/models"
 	"github.com/Reg00/gameReview/internal/domain/port"
 	"github.com/Reg00/gameReview/internal/domain/service"
 	"github.com/gin-gonic/gin"
@@ -33,7 +34,7 @@ func New(
 // @Accept json
 // @Produce json
 // @Param id path int true "id"
-// @Success 200 {object} dto.Game
+// @Success 200 {object} models.Game
 // @Router /games/{id} [get]
 func (h *Handler) GetGameById(c *gin.Context) {
 	idStr := c.Param("id")
@@ -60,7 +61,7 @@ func (h *Handler) GetGameById(c *gin.Context) {
 // @Param offset query int false "offset"
 // @Param limit query int false "limit"
 // @Param name query string false "name"
-// @Success 200 {object} []dto.Game
+// @Success 200 {object} []models.Game
 // @Router /games [get]
 func (h *Handler) GetGamesByNameHandlerFunc(c *gin.Context) {
 	name := c.DefaultQuery("name", "")
@@ -94,11 +95,11 @@ func (h *Handler) GetGamesByNameHandlerFunc(c *gin.Context) {
 // @Description  add game review
 // @Accept json
 // @Produce json
-// @Param review body storage.Review true "review info"
-// @Success 200 {object} []dto.Game
+// @Param review body models.AddReview true "review info"
+// @Success 200 {object} dto.Review
 // @Router /reviews [post]
 func (h *Handler) AddReview(c *gin.Context) {
-	var review storage.Review
+	var review models.AddReview
 
 	if err := c.BindJSON(&review); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -110,7 +111,7 @@ func (h *Handler) AddReview(c *gin.Context) {
 		return
 	}
 
-	r, err := h.storage.AddReview(&review)
+	r, err := h.storage.AddReview(dto.ConvertToDto(&review))
 	if err != nil {
 		fmt.Println(err.Error())
 		c.Error(err)
@@ -118,4 +119,38 @@ func (h *Handler) AddReview(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, r)
+}
+
+// @Summary get game review by id
+// @Schemes
+// @Description  get game review by id
+// @Accept json
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 {object} dto.Review
+// @Router /reviews/{id} [get]
+func (h *Handler) GetReviewById(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	dtoReview, err := h.storage.GetReviewById(id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	review := dtoReview.Convert()
+	game, err := h.grs.GetGameById(dtoReview.GameID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	review.Game = game
+
+	c.IndentedJSON(http.StatusOK, review)
 }

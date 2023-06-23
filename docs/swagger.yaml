@@ -1,16 +1,5 @@
 definitions:
-  dto.Game:
-    properties:
-      genres:
-        items:
-          type: string
-        type: array
-      imageURI:
-        type: string
-      name:
-        type: string
-    type: object
-  storage.Review:
+  dto.Review:
     properties:
       description:
         type: string
@@ -24,6 +13,30 @@ definitions:
         type: integer
       rate:
         type: integer
+    type: object
+  models.AddReview:
+    properties:
+      description:
+        type: string
+      gameID:
+        type: integer
+      playMinutes:
+        type: integer
+      playTime:
+        type: integer
+      rate:
+        type: integer
+    type: object
+  models.Game:
+    properties:
+      genres:
+        items:
+          type: string
+        type: array
+      imageURI:
+        type: string
+      name:
+        type: string
     type: object
 info:
   contact: {}
@@ -53,7 +66,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/dto.Game'
+              $ref: '#/definitions/models.Game'
             type: array
       summary: get list of games by name
   /games/{id}:
@@ -73,7 +86,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.Game'
+            $ref: '#/definitions/models.Game'
       summary: get game by id
   /reviews:
     post:
@@ -86,15 +99,32 @@ paths:
         name: review
         required: true
         schema:
-          $ref: '#/definitions/storage.Review'
+          $ref: '#/definitions/models.AddReview'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/dto.Game'
-            type: array
+            $ref: '#/definitions/dto.Review'
       summary: add game review
+  /reviews/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get game review by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Review'
+      summary: get game review by id
 swagger: "2.0"

@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/Henry-Sarabia/igdb/v2"
-	"github.com/Reg00/gameReview/internal/domain/dto"
 	"github.com/Reg00/gameReview/internal/domain/dto/httperr"
+	"github.com/Reg00/gameReview/internal/domain/models"
 	"github.com/Reg00/gameReview/internal/infrastructure/config"
 	"github.com/pkg/errors"
 )
@@ -24,22 +24,22 @@ func Register(
 	return igdbClient
 }
 
-func (client *IgdbClient) GetGameById(id int) (dto.Game, error) {
+func (client *IgdbClient) GetGameById(id int) (models.Game, error) {
 	game, err := client.Client.Games.Get(id, igdb.SetFields("name", "cover", "genres"))
 	if err != nil {
-		return dto.Game{}, handleError(err)
+		return models.Game{}, handleError(err)
 	}
 
 	dtoGame, err := client.convertToDto(game)
 	if err != nil {
-		return dto.Game{}, handleError(err)
+		return models.Game{}, handleError(err)
 	}
 
 	return dtoGame, nil
 }
 
-func (client *IgdbClient) GetGamesByName(offset int, limit int, name string) ([]dto.Game, error) {
-	var gms []dto.Game
+func (client *IgdbClient) GetGamesByName(offset int, limit int, name string) ([]models.Game, error) {
+	var gms []models.Game
 
 	opts := igdb.ComposeOptions(
 		igdb.SetFields("name", "cover", "genres"),
@@ -77,26 +77,26 @@ func (client *IgdbClient) GetGamesByName(offset int, limit int, name string) ([]
 	return gms, nil
 }
 
-func (client *IgdbClient) convertToDto(game *igdb.Game) (dto.Game, error) {
+func (client *IgdbClient) convertToDto(game *igdb.Game) (models.Game, error) {
 	var img string
 	var genrs []string
 
 	if game.Cover != 0 {
 		cover, err := client.Client.Covers.Get(game.Cover, igdb.SetFields("image_id"))
 		if err != nil {
-			return dto.Game{}, handleError(err)
+			return models.Game{}, handleError(err)
 		}
 
 		img, err = cover.SizedURL(igdb.SizeCoverSmall, 1)
 		if err != nil {
-			return dto.Game{}, handleError(err)
+			return models.Game{}, handleError(err)
 		}
 	}
 
 	if len(game.Genres) > 0 {
 		genres, err := client.Client.Genres.List(game.Genres, igdb.SetFields("name"))
 		if err != nil {
-			return dto.Game{}, handleError(err)
+			return models.Game{}, handleError(err)
 		}
 
 		for _, genre := range genres {
@@ -104,7 +104,7 @@ func (client *IgdbClient) convertToDto(game *igdb.Game) (dto.Game, error) {
 		}
 	}
 
-	dtoGame := dto.Game{
+	dtoGame := models.Game{
 		Name:     game.Name,
 		ImageURI: img,
 		Genres:   genrs,

@@ -38,6 +38,7 @@ func Register(igdb port.GameSearcher, s port.Storager) (*gin.Engine, error) {
 		r := v1.Group("reviews")
 		{
 			r.POST("/", h.AddReview)
+			r.GET("/:id", h.GetReviewById)
 		}
 	}
 	r.GET("/", func(c *gin.Context) {

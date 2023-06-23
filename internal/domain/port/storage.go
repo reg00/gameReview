@@ -1,7 +1,8 @@
 package port
 
-import "github.com/Reg00/gameReview/internal/domain/dto/storage"
+import dto "github.com/Reg00/gameReview/internal/domain/dto"
 
 type Storager interface {
-	AddReview(review *storage.Review) (*storage.Review, error)
+	AddReview(review *dto.Review) (*dto.Review, error)
+	GetReviewById(id int) (*dto.Review, error)
 }
