@@ -82,6 +82,8 @@ paths:
               $ref: '#/definitions/models.Game'
             type: array
       summary: get list of games by name
+      tags:
+      - games
   /games/{id}:
     get:
       consumes:
@@ -101,6 +103,8 @@ paths:
           schema:
             $ref: '#/definitions/models.Game'
       summary: get game by id
+      tags:
+      - games
   /reviews:
     post:
       consumes:
@@ -121,6 +125,8 @@ paths:
           schema:
             $ref: '#/definitions/models.GetReview'
       summary: add game review
+      tags:
+      - reviews
   /reviews/{id}:
     delete:
       consumes:
@@ -138,6 +144,8 @@ paths:
         "200":
           description: ""
       summary: delete game review by id
+      tags:
+      - reviews
     get:
       consumes:
       - application/json
@@ -156,6 +164,8 @@ paths:
           schema:
             $ref: '#/definitions/models.GetReview'
       summary: get game review by id
+      tags:
+      - reviews
     put:
       consumes:
       - application/json
@@ -180,4 +190,6 @@ paths:
           schema:
             $ref: '#/definitions/models.GetReview'
       summary: update game review
+      tags:
+      - reviews
 swagger: "2.0"

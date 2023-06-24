@@ -25,6 +25,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "games"
+                ],
                 "summary": "get list of games by name",
                 "parameters": [
                     {
@@ -68,6 +71,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "games"
+                ],
                 "summary": "get game by id",
                 "parameters": [
                     {
@@ -96,6 +102,9 @@ const docTemplate = `{
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "reviews"
                 ],
                 "summary": "add game review",
                 "parameters": [
@@ -128,6 +137,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "reviews"
+                ],
                 "summary": "get game review by id",
                 "parameters": [
                     {
@@ -154,6 +166,9 @@ const docTemplate = `{
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "reviews"
                 ],
                 "summary": "update game review",
                 "parameters": [
@@ -190,6 +205,9 @@ const docTemplate = `{
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "reviews"
                 ],
                 "summary": "delete game review by id",
                 "parameters": [

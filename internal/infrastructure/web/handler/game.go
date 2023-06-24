@@ -24,6 +24,7 @@ func NewGameHandler(
 // @Summary get game by id
 // @Schemes
 // @Description getting a game by game id
+// @Tags games
 // @Accept json
 // @Produce json
 // @Param id path int true "id"
@@ -49,6 +50,7 @@ func (h *GameHandler) GetGameById(c *gin.Context) {
 // @Summary get list of games by name
 // @Schemes
 // @Description return a list of game, searched by name
+// @Tags games
 // @Accept json
 // @Produce json
 // @Param offset query int false "offset"

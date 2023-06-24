@@ -28,6 +28,7 @@ func NewReviewHandler(
 // @Summary add game review
 // @Schemes
 // @Description add game review
+// @Tags reviews
 // @Accept json
 // @Produce json
 // @Param review body models.AddReview true "review info"
@@ -55,6 +56,7 @@ func (h *ReviewHandler) AddReview(c *gin.Context) {
 // @Summary update game review
 // @Schemes
 // @Description update game review
+// @Tags reviews
 // @Accept json
 // @Produce json
 // @Param id path int true "id"
@@ -90,6 +92,7 @@ func (h *ReviewHandler) UpdateReview(c *gin.Context) {
 // @Summary delete game review by id
 // @Schemes
 // @Description  delete game review by id
+// @Tags reviews
 // @Accept json
 // @Produce json
 // @Param id path int true "id"
@@ -115,6 +118,7 @@ func (h *ReviewHandler) DeleteReview(c *gin.Context) {
 // @Summary get game review by id
 // @Schemes
 // @Description  get game review by id
+// @Tags reviews
 // @Accept json
 // @Produce json
 // @Param id path int true "id"
