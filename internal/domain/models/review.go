@@ -17,3 +17,10 @@ type AddReview struct {
 	PlayMinutes int
 	Rate        int
 }
+
+type UpdateReview struct {
+	Description string
+	PlayTime    int
+	PlayMinutes int
+	Rate        int
+}

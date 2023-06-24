@@ -146,6 +146,66 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "description": "update game review",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "update game review",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "review info",
+                        "name": "review",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateReview"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.GetReview"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "delete game review by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "delete game review by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
             }
         }
     },
@@ -201,6 +261,23 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "playMinutes": {
+                    "type": "integer"
+                },
+                "playTime": {
+                    "type": "integer"
+                },
+                "rate": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.UpdateReview": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
                 },
                 "playMinutes": {
                     "type": "integer"

@@ -40,6 +40,17 @@ definitions:
       rate:
         type: integer
     type: object
+  models.UpdateReview:
+    properties:
+      description:
+        type: string
+      playMinutes:
+        type: integer
+      playTime:
+        type: integer
+      rate:
+        type: integer
+    type: object
 info:
   contact: {}
 paths:
@@ -111,6 +122,22 @@ paths:
             $ref: '#/definitions/models.GetReview'
       summary: add game review
   /reviews/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete game review by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: delete game review by id
     get:
       consumes:
       - application/json
@@ -129,4 +156,28 @@ paths:
           schema:
             $ref: '#/definitions/models.GetReview'
       summary: get game review by id
+    put:
+      consumes:
+      - application/json
+      description: update game review
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: review info
+        in: body
+        name: review
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateReview'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetReview'
+      summary: update game review
 swagger: "2.0"

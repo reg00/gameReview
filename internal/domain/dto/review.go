@@ -22,9 +22,18 @@ func (review *Review) Convert() *models.GetReview {
 	}
 }
 
-func ConvertToDto(review *models.AddReview) *Review {
+func ConvertAddToDto(review *models.AddReview) *Review {
 	return &Review{
 		GameID:      review.GameID,
+		Description: review.Description,
+		PlayTime:    review.PlayTime,
+		PlayMinutes: review.PlayMinutes,
+		Rate:        review.Rate,
+	}
+}
+
+func ConvertUpdateToDto(review *models.UpdateReview) *Review {
+	return &Review{
 		Description: review.Description,
 		PlayTime:    review.PlayTime,
 		PlayMinutes: review.PlayMinutes,

@@ -27,7 +27,7 @@ func NewReviewHandler(
 
 // @Summary add game review
 // @Schemes
-// @Description  add game review
+// @Description add game review
 // @Accept json
 // @Produce json
 // @Param review body models.AddReview true "review info"
@@ -50,6 +50,66 @@ func (h *ReviewHandler) AddReview(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, review)
+}
+
+// @Summary update game review
+// @Schemes
+// @Description update game review
+// @Accept json
+// @Produce json
+// @Param id path int true "id"
+// @Param review body models.UpdateReview true "review info"
+// @Success 200 {object} models.GetReview
+// @Router /reviews/{id} [put]
+func (h *ReviewHandler) UpdateReview(c *gin.Context) {
+
+	var updateReview models.UpdateReview
+
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	if err := c.BindJSON(&updateReview); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	review, err := h.storage.UpdateReview(id, &updateReview)
+	if err != nil {
+		fmt.Println(err.Error())
+		c.Error(err)
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, review)
+}
+
+// @Summary delete game review by id
+// @Schemes
+// @Description  delete game review by id
+// @Accept json
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 ""
+// @Router /reviews/{id} [delete]
+func (h *ReviewHandler) DeleteReview(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	err = h.storage.DeleteReview(id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.Status(http.StatusOK)
 }
 
 // @Summary get game review by id

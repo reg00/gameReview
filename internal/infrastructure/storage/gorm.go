@@ -46,6 +46,37 @@ func (storage *GormStorage) AddReview(review *dto.Review) (*dto.Review, error) {
 	return review, nil
 }
 
+func (storage *GormStorage) UpdateReview(id int, updatReview *dto.Review) (*dto.Review, error) {
+	review, err := storage.GetReviewById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	storage.gormDB.Model(&review).Updates(dto.Review{
+		Description: updatReview.Description,
+		PlayTime:    updatReview.PlayTime,
+		PlayMinutes: updatReview.PlayMinutes,
+		Rate:        updatReview.Rate,
+	})
+
+	review, err = storage.GetReviewById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return review, nil
+}
+
+func (storage *GormStorage) DeleteReview(id int) error {
+	review, err := storage.GetReviewById(id)
+	if err != nil {
+		return err
+	}
+
+	storage.gormDB.Delete(&review)
+	return nil
+}
+
 func (storage *GormStorage) GetReviewById(id int) (*dto.Review, error) {
 	var review dto.Review
 	storage.gormDB.First(&review, "id = ?", id)

@@ -44,6 +44,8 @@ func Register(igdb port.GameSearcher, s port.Storager) (*gin.Engine, error) {
 		{
 			r.POST("/", rh.AddReview)
 			r.GET("/:id", rh.GetReviewById)
+			r.PUT("/:id", rh.UpdateReview)
+			r.DELETE("/:id", rh.DeleteReview)
 		}
 	}
 	r.GET("/", func(c *gin.Context) {

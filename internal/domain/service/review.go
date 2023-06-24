@@ -31,7 +31,7 @@ func (rs *ReviewService) AddReview(addReview *models.AddReview) (*models.GetRevi
 		return nil, errors.Wrap(httperr.ErrBadRequest, fmt.Sprintf("ReviewService: %s", errors.New("Rate must be between 0 and 10")))
 	}
 
-	dtoReview, err := rs.storage.AddReview(dto.ConvertToDto(addReview))
+	dtoReview, err := rs.storage.AddReview(dto.ConvertAddToDto(addReview))
 	if err != nil {
 		return nil, err
 	}
@@ -45,6 +45,38 @@ func (rs *ReviewService) AddReview(addReview *models.AddReview) (*models.GetRevi
 	review.Game = game
 
 	return review, nil
+}
+
+func (rs *ReviewService) UpdateReview(id int, updatReview *models.UpdateReview) (*models.GetReview, error) {
+
+	if updatReview.Rate < 0 || updatReview.Rate > 10 {
+		return nil, errors.Wrap(httperr.ErrBadRequest, fmt.Sprintf("ReviewService: %s", errors.New("Rate must be between 0 and 10")))
+	}
+
+	dtoReview, err := rs.storage.UpdateReview(id, dto.ConvertUpdateToDto(updatReview))
+	if err != nil {
+		return nil, err
+	}
+
+	review := dtoReview.Convert()
+	game, err := rs.gs.GetGameById(dtoReview.GameID)
+	if err != nil {
+		return nil, err
+	}
+
+	review.Game = game
+
+	return review, nil
+}
+
+func (rs *ReviewService) DeleteReview(id int) error {
+
+	err := rs.storage.DeleteReview(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (rs *ReviewService) GetReviewById(id int) (*models.GetReview, error) {
