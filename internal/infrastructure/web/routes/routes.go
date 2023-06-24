@@ -16,7 +16,12 @@ import (
 // @version 1.0
 // @description This is a sample game review server.
 func Register(igdb port.GameSearcher, s port.Storager) (*gin.Engine, error) {
-	h, err := handler.New(igdb, s)
+	gh, err := handler.NewGameHandler(igdb)
+	if err != nil {
+		return nil, err
+	}
+
+	rh, err := handler.NewReviewHandler(igdb, s)
 	if err != nil {
 		return nil, err
 	}
@@ -32,13 +37,13 @@ func Register(igdb port.GameSearcher, s port.Storager) (*gin.Engine, error) {
 	{
 		g := v1.Group("games")
 		{
-			g.GET("/", h.GetGamesByNameHandlerFunc)
-			g.GET("/:id", h.GetGameById)
+			g.GET("/", gh.GetGamesByNameHandlerFunc)
+			g.GET("/:id", gh.GetGameById)
 		}
 		r := v1.Group("reviews")
 		{
-			r.POST("/", h.AddReview)
-			r.GET("/:id", h.GetReviewById)
+			r.POST("/", rh.AddReview)
+			r.GET("/:id", rh.GetReviewById)
 		}
 	}
 	r.GET("/", func(c *gin.Context) {

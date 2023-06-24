@@ -113,7 +113,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.Review"
+                            "$ref": "#/definitions/models.GetReview"
                         }
                     }
                 }
@@ -142,7 +142,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.Review"
+                            "$ref": "#/definitions/models.GetReview"
                         }
                     }
                 }
@@ -150,29 +150,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dto.Review": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "gameid": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "playminutes": {
-                    "type": "integer"
-                },
-                "playtime": {
-                    "type": "integer"
-                },
-                "rate": {
-                    "type": "integer"
-                }
-            }
-        },
         "models.AddReview": {
             "type": "object",
             "properties": {
@@ -207,6 +184,32 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "models.GetReview": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "game": {
+                    "$ref": "#/definitions/models.Game"
+                },
+                "gameID": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "playMinutes": {
+                    "type": "integer"
+                },
+                "playTime": {
+                    "type": "integer"
+                },
+                "rate": {
+                    "type": "integer"
                 }
             }
         }

@@ -2,6 +2,7 @@ package models
 
 type GetReview struct {
 	ID          int
+	GameID      int
 	Description string
 	PlayTime    int
 	PlayMinutes int

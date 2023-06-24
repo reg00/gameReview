@@ -14,6 +14,7 @@ type Review struct {
 func (review *Review) Convert() *models.GetReview {
 	return &models.GetReview{
 		ID:          review.ID,
+		GameID:      review.GameID,
 		Description: review.Description,
 		PlayTime:    review.PlayTime,
 		PlayMinutes: review.PlayMinutes,
