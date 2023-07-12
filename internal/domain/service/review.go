@@ -13,15 +13,18 @@ import (
 type ReviewService struct {
 	storage port.Storager
 	gs      port.GameSearcher
+	cache   port.Cacher
 }
 
 func NewReviewService(
 	storage *port.Storager,
 	gs *port.GameSearcher,
+	cache *port.Cacher,
 ) *ReviewService {
 	return &ReviewService{
 		storage: *storage,
 		gs:      *gs,
+		cache:   *cache,
 	}
 }
 
@@ -37,7 +40,8 @@ func (rs *ReviewService) AddReview(addReview *models.AddReview) (*models.GetRevi
 	}
 
 	review := dtoReview.Convert()
-	game, err := rs.gs.GetGameById(dtoReview.GameID)
+
+	game, err := rs.verifyCache(dtoReview.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +63,7 @@ func (rs *ReviewService) UpdateReview(id int, updatReview *models.UpdateReview) 
 	}
 
 	review := dtoReview.Convert()
-	game, err := rs.gs.GetGameById(dtoReview.GameID)
+	game, err := rs.verifyCache(dtoReview.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +94,7 @@ func (rs *ReviewService) GetReviewById(id int) (*models.GetReview, error) {
 	}
 
 	review := dtoReview.Convert()
-	game, err := rs.gs.GetGameById(dtoReview.GameID)
+	game, err := rs.verifyCache(dtoReview.GameID)
 	if err != nil {
 		return nil, err
 	}
@@ -98,4 +102,23 @@ func (rs *ReviewService) GetReviewById(id int) (*models.GetReview, error) {
 	review.Game = game
 
 	return review, nil
+}
+
+func (rs *ReviewService) verifyCache(id int) (models.Game, error) {
+	game, err := rs.cache.GetGameById(id)
+	if err == nil {
+		return game, nil
+	}
+
+	game, err = rs.gs.GetGameById(id)
+	if err != nil {
+		return models.Game{}, err
+	}
+
+	err = rs.cache.SetGame(game)
+	if err != nil {
+		return models.Game{}, err
+	}
+
+	return game, nil
 }

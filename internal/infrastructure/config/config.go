@@ -8,6 +8,7 @@ type Configuration struct {
 	Http    HTTP
 	Storage Storage
 	Igdb    IGDB
+	Cache   Cache
 }
 
 type HTTP struct {
@@ -27,4 +28,8 @@ type Storage struct {
 type IGDB struct {
 	ClientId     string
 	ClientSecret string
+}
+
+type Cache struct {
+	Addr string
 }

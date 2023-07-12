@@ -12,16 +12,15 @@ import (
 )
 
 type ReviewHandler struct {
-	gs      *service.GameService
 	storage *service.ReviewService
 }
 
 func NewReviewHandler(
 	igdb port.GameSearcher,
-	s port.Storager) (*ReviewHandler, error) {
+	s port.Storager,
+	c port.Cacher) (*ReviewHandler, error) {
 	h := &ReviewHandler{}
-	h.gs = service.NewGameService(&igdb)
-	h.storage = service.NewReviewService(&s, &igdb)
+	h.storage = service.NewReviewService(&s, &igdb, &c)
 	return h, nil
 }
 

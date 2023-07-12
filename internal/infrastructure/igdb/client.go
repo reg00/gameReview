@@ -105,6 +105,7 @@ func (client *IgdbClient) convertToDto(game *igdb.Game) (models.Game, error) {
 	}
 
 	dtoGame := models.Game{
+		ID:       game.ID,
 		Name:     game.Name,
 		ImageURI: img,
 		Genres:   genrs,

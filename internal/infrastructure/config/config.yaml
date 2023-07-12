@@ -9,3 +9,5 @@ storage:
 igdb:
   clientId: "*"
   cliendSecret: "*"
+cache:
+  addr: "*"

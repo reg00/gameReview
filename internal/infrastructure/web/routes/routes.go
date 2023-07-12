@@ -15,13 +15,13 @@ import (
 // @title Swagger Example API
 // @version 1.0
 // @description This is a sample game review server.
-func Register(igdb port.GameSearcher, s port.Storager) (*gin.Engine, error) {
+func Register(igdb port.GameSearcher, s port.Storager, c port.Cacher) (*gin.Engine, error) {
 	gh, err := handler.NewGameHandler(igdb)
 	if err != nil {
 		return nil, err
 	}
 
-	rh, err := handler.NewReviewHandler(igdb, s)
+	rh, err := handler.NewReviewHandler(igdb, s, c)
 	if err != nil {
 		return nil, err
 	}
