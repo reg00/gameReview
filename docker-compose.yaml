@@ -1,0 +1,42 @@
+version: '3.7'
+services:
+  game-review-be:
+    image: local/game-review/be
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5678:5678"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+  
+  db:
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_DB: game-review
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+    volumes:
+      - ./.data/game-review/shared/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U postgres
+      interval: 5s
+      retries: 5
+    restart: always
+    
+  redis:
+    image: bitnami/redis:latest
+    ports:
+      - "6379:6379"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - ./.data/game-review/shared/redis:/bitnami
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 5s
+      retries: 5
+    restart: always

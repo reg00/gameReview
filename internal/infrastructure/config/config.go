@@ -22,7 +22,16 @@ func (h *HTTP) GetTimeout() time.Duration {
 
 type Storage struct {
 	Provider string
-	Options  map[string]interface{}
+	Options  StorageOptions
+}
+
+type StorageOptions struct {
+	Driver   string
+	Host     string
+	User     string
+	Password string
+	Dbname   string
+	Port     string
 }
 
 type IGDB struct {

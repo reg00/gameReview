@@ -2,7 +2,6 @@ package gorm
 
 import (
 	"fmt"
-	"log"
 
 	dto "github.com/Reg00/gameReview/internal/domain/dto"
 	"github.com/Reg00/gameReview/internal/domain/dto/httperr"
@@ -17,25 +16,55 @@ type GormStorage struct {
 }
 
 func Register(cfg *config.Configuration) (*GormStorage, error) {
-	opts, err := newGormOptions(cfg.Storage.Options)
-	if err != nil {
-		return nil, fmt.Errorf("gorm: malformed options: %s", err)
-	}
-	log.Println(opts.dsn)
 	var db = &gorm.DB{}
+
+	err := createDatabase(cfg)
+	if err != nil {
+		return nil, fmt.Errorf("gorm: initial create: %s", err)
+	}
+
+	createDBDsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s",
+		cfg.Storage.Options.Host,
+		cfg.Storage.Options.User,
+		cfg.Storage.Options.Password,
+		cfg.Storage.Options.Dbname,
+		cfg.Storage.Options.Port)
+
 	switch {
-	case opts.driver == "postgres":
-		db, err = gorm.Open(postgres.Open(opts.dsn))
+	case cfg.Storage.Options.Driver == "postgres":
+		db, err = gorm.Open(postgres.Open(createDBDsn))
 		if err != nil {
 			return nil, fmt.Errorf("gorm: open db: %s", err)
 		}
 	default:
 		return nil, errors.New("gorm: invalid storage driver")
 	}
+
 	db.AutoMigrate(&dto.Review{})
 	return &GormStorage{
 		gormDB: db,
 	}, nil
+}
+
+func createDatabase(cfg *config.Configuration) error {
+	conn_url := fmt.Sprintf("user=%s password=%s host=%s port=%s sslmode=disable",
+		cfg.Storage.Options.User,
+		cfg.Storage.Options.Password,
+		cfg.Storage.Options.Host,
+		cfg.Storage.Options.Port)
+	DB, err := gorm.Open(postgres.Open(conn_url), &gorm.Config{})
+	if err != nil {
+		return err
+	}
+
+	count := 0
+	DB.Raw("SELECT count(*) FROM pg_database WHERE datname = ?", cfg.Storage.Options.Dbname).Scan(&count)
+	if count == 0 {
+		sql := fmt.Sprintf("CREATE DATABASE %s", cfg.Storage.Options.Dbname)
+		DB.Exec(sql)
+	}
+
+	return nil
 }
 
 func (storage *GormStorage) AddReview(review *dto.Review) (*dto.Review, error) {
